@@ -6,7 +6,7 @@ Este repositorio contiene **templates personalizados de Nuclei** para la explota
 Cada template ha sido diseñado para demostrar **cómo Nuclei puede ser utilizado para detectar y explotar vulnerabilidades en entornos controlados**, ayudando a entender mejor su funcionamiento y automatizar su detección. ✅  
 
 🌍PROJECTDISCOVERY LOS CREADORES DE NUCLEI:
-- **[https://portswigger.net/web-security](https://projectdiscovery.io)**
+- **[https://projectdiscovery.io](https://projectdiscovery.io)**
 
 ---
 
