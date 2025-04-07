@@ -1,3 +1,6 @@
+![42e1c8a8-cb8e-481f-959c-c086598abd6a](https://github.com/user-attachments/assets/607a4b40-3330-4114-8a84-24198c021a5d)
+
+
 # 🔍 Nuclei-Templates para Laboratorios de PortSwigger y más 🚀
 
 ## 📌 Descripción:
